@@ -2,8 +2,12 @@
 
 **Serverless Architecture with OpenFaaS**
 
-![image](https://user-images.githubusercontent.com/38450758/209433014-dffb98db-0b80-4179-ae09-c952c3a6dc53.png)
- 
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/38450758/209446422-ab7db3a2-66b4-4af6-8031-394848dc8169.png">
+</p>
+
+
 **Deploy the OpenFaaS**
 
 •	OpenFaaS is a Serverless Framework.
@@ -61,8 +65,9 @@ The PLONK stack also requires components like a Container Registry and Container
 
 **If basic auth is enabled, we can now log into your gateway**
 
-    $ PASSWORD=$(kubectl get secret -n openfaas basic-auth -o
-jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
+    PASSWORD=$(kubectl get secret -n openfaas basic-auth -o
+
+    jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
 
     echo -n $PASSWORD | faas-cli login --username admin --password-stdin
     
@@ -140,52 +145,54 @@ We then have faas-cli store deploy figlet and faas-cli list. The first command d
 
     $ faas-cli new --lang python3 hello-openfaas --prefix="<docker-username>"
 
-**This will create three files and a directory**
+**This will create three files and a directory as we see below**
 
-    ./hello-openfaas.yml
-    ./hello-openfaas
-    ./hello-openfaas/handler.py
-    ./hello-openfaas/requirements.txt
+![image](https://user-images.githubusercontent.com/38450758/209444837-65743740-389b-474b-a864-3b4e515251b5.png)
+
 
 **This hello-openfaas.yml file is used to configure the CLI for building, pushing, and deploying our function**
 
 **Note:** If we deploy a function on local Kubernetes cluster or on cloud, we need to override the default gateway URL of 127.0.0.1:8080 with an environmental 
 
-variable: OPENFAAS_PREFIX
-OPENFAAS_URL=127.0.0.1:8080
-Below is the hello-openfaas.yml file content:
-provider:
-  name: openfaas
-  gateway: http://127.0.0.1:8080
+Variable: OPENFAAS_PREFIX
 
-functions:
-  hello-openfaas:
-    lang: python3
-    handler: ./hello-openfaas
-    image: hello-openfaas
+OPENFAAS_URL=127.0.0.1:8080
+
+**Below is the hello-openfaas.yml file content**
+
+![image](https://user-images.githubusercontent.com/38450758/209444893-fe89b7cd-5a0d-4b3b-9ed1-e8f52f5270ae.png)
 
 
 **Remember that the gateway URL can be overridden in the YAML file (by editing the gateway: value under provider:) or on the CLI (by using --gateway or setting the OPENFAAS_URL environment variable)**
 
 **Below is the handler.py file content**
 
-def handle(req):
-    """handle a request to the function
-    Args:
-        req (str): request body
-    """
-
-    return "Hello OpenFaaS"
+![image](https://user-images.githubusercontent.com/38450758/209445016-b2c870e3-7cce-47fc-9d74-71c08ba042dc.png)
 
 
 **Build, Push and Deploy using below commands**
 
+**Build the image**
+
     $ faas-cli build -f Yaml filename - build an image into the local Docker library
- 
+
+![image](https://user-images.githubusercontent.com/38450758/209445193-19675433-5bf0-4d30-95ce-21a803d125c8.png)
+
+
+**Push the image to local/remote repo as per our configuration**
+
     $ faas-cli push - f Yaml filename - push that image to a remote container registry
- 
+
+![image](https://user-images.githubusercontent.com/38450758/209445207-9c589400-b2e6-4863-96b6-27ef8029d4d2.png)
+
+
+**Deploy the image into kubernetes cluster**
+
     $ faas-cli deploy - f Yaml filename - deploy our function into a Kubernetes cluster
- 
+
+![image](https://user-images.githubusercontent.com/38450758/209445231-421b0be6-e678-49ba-b27c-83ea85ecd3b5.png)
+
+
 **We can Automate the process of Build, Push and Deploy using single below command**
 
     $ faas-cli up -f  Yaml filename
@@ -196,6 +203,9 @@ def handle(req):
 **List, inspect, invoke, and troubleshoot your functions**
 
 •	faas-cli list
+
+![image](https://user-images.githubusercontent.com/38450758/209445240-d71f8068-c01a-435d-9151-9e0ebb359d1f.png)
+
  
 •	faas-cli describe
 
@@ -231,6 +241,9 @@ def handle(req):
 
     $ curl -v http://127.0.0.1:8080/function/hello-openfaas/ping
  
+ ![image](https://user-images.githubusercontent.com/38450758/209445272-cd5bb299-d24d-4340-9d7c-3cff30169827.png)
+
+ 
 
 **We can see the deployment external gateway details by using below command**
 
@@ -248,25 +261,42 @@ Run below command for password and use this password for logging into OpenFaaS U
     
 **To open the UI navigate to http://127.0.0.1:8080 in a browser. There is no need to worry that this is using HTTP (plaintext) instead of HTTPS because the previous port-forwarding command runs over an encrypted connection**
  
+![image](https://user-images.githubusercontent.com/38450758/209445308-38ede202-dcd1-4956-ad00-0cb7cee6f6ba.png)
+
 
 **When prompted, the user is admin and the password is the value from above. The password can be changed at any time. A commercial solution using OpenID Connect is also available separately**
 
 **Click on Deploy New Function then enter the function name in the search. Once we found, select that function then click on Deploy as shown in the below image. It will pull from the marketplace**
  
+![image](https://user-images.githubusercontent.com/38450758/209445343-68cec21f-acce-46c2-b156-de7feb450638.png)
+
 
 **Select the same function from available list then click on INVOKE**
  
+![image](https://user-images.githubusercontent.com/38450758/209445358-7b6b38e9-5166-4605-a6c8-803fd26786d8.png)
+
 
 **Once we click on INVOKE, we can see the output of the function. And we can see the Response Status, Replicas, Image repo URL**
  
+![image](https://user-images.githubusercontent.com/38450758/209445404-cc28e4f7-db71-467d-aa32-d62895382edb.png)
+
 
 **Enter deployed function name in the search then select the function then click INVOKE. Will see the output**
  
+![image](https://user-images.githubusercontent.com/38450758/209445418-638a5bc4-4315-44b8-ae97-d1841053ced1.png)
 
-We can see the output of existing hello-openfaas function deployed from CLI.
+
+**We can see the output of existing hello-openfaas function deployed from CLI**
+
+![image](https://user-images.githubusercontent.com/38450758/209445451-352027b8-6c61-41d8-adcd-cc9b6491e8f0.png)
+
  
 
 **Monitoring with Prometheus & Grafana**
+
+
+![image](https://user-images.githubusercontent.com/38450758/209445481-984665fc-be00-4620-ac41-2371fce68364.png)
+
    
 **Exploring the Metrics**
 
@@ -278,6 +308,8 @@ Prometheus does not come with any kind of authentication, so we keep it hidden b
 
 Now open its UI using http://127.0.0.1:9090
  
+![image](https://user-images.githubusercontent.com/38450758/209445505-c29752ea-d4fb-476e-8937-fde98c89ce34.png)
+
 
 **Monitoring the Functions with a Grafana Dashboard**
 
@@ -309,12 +341,18 @@ If you're using Kubernetes 1.17 or older, use deploy/grafana instead of pod/ in 
 
 After the service has been created open Grafana in your browser, login with username admin password admin and navigate to the pre-made OpenFaaS dashboard at $GRAFANA_URL.
 
-We can observe in below screenshots, how the load/traffic is increasing  
+**We can observe in below screenshots, how the load/traffic is increasing**  
  
- 
- 
- 
- 
+![image](https://user-images.githubusercontent.com/38450758/209445657-d190b187-229c-4772-baa3-495310ce6278.png)
+
+![image](https://user-images.githubusercontent.com/38450758/209445715-28ed1532-b680-4ddc-b878-9bb7748f3f79.png)
+
+![image](https://user-images.githubusercontent.com/38450758/209445768-0135b6d2-43d5-42a0-8cc5-ac4983c62e07.png)
+
+![image](https://user-images.githubusercontent.com/38450758/209445809-7d33efbd-2476-41cd-b91c-4dc43f97539f.png)
+
+![image](https://user-images.githubusercontent.com/38450758/209445826-e4e217da-f652-4c92-ab17-b5ec29e42650.png)
+
 
 
 **Auto-Scaling Work**
@@ -346,6 +384,9 @@ Open four terminal windows and type in the following commands, one into each ter
 **Now we are ready to invoke the function again**
 
     $ curl -d "hi" http://127.0.0.1:8080/function/go-echo
+    
+![image](https://user-images.githubusercontent.com/38450758/209445847-07773445-9bb4-44f5-8450-40da53c39d67.png)
+
  
 **Scale from Zero**
 
@@ -376,5 +417,10 @@ Another option we mentioned earlier in the course was faasd, which runs on a sin
  
 
 
- 
- 
+![image](https://user-images.githubusercontent.com/38450758/209445873-33f9482a-8a22-428b-b6c5-9a284447d188.png)
+
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/38450758/209445882-a0b76e6d-2f08-4c4f-bcfc-00523939125d.png">
+</p>
+
