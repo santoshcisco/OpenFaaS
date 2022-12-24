@@ -1,2 +1,380 @@
 # OpenFaaS
-Serverless Architecture with OpenFaaS
+
+**Serverless Architecture with OpenFaaS**
+
+![image](https://user-images.githubusercontent.com/38450758/209433014-dffb98db-0b80-4179-ae09-c952c3a6dc53.png)
+ 
+**Deploy the OpenFaaS**
+
+•	OpenFaaS is a Serverless Framework.
+
+•	The term serverless gained much popularity. However, many people are still unsure what it is for, and how it can help them build applications faster than traditional approaches
+
+•	The Community Edition (CE) of OpenFaaS uses our legacy scaling technology, which is meant for development only
+
+•	OpenFaaS Pro Edition gives auto scaling feature. If you are looking for Production, then go for OpenFaaS Pro Edition
+
+**What is PLONK?**
+
+The PLONK stack also requires components like a Container Registry and Container Runtime such as Docker or containerd. You can then build on top of it by introducing new projects, such as OpenFaaS Cloud, GitHub and GitLab
+ 
+
+**Infrastructure Layer:**
+
+1.	Docker provides a packaging image format.
+
+2.	A container registry holds each version of our function, we can version it and benefit from distribution.
+
+3.	Kubernetes provides a control plane to run our functions, including fail-over, high availability (HA), scale-out and secret management.
+
+
+**Application Layer:**
+
+1.	The OpenFaaS Gateway is conceptually similar to a reverse proxy like Nginx, Kong or Caddy; however, its job is to expose and manage containers running our functions, rather than REST APIs. It does have its own REST API and can be automated. The most popular client for the OpenFaaS Gateway is the CLI (faas-cli), followed by the UI.
+
+2.	Prometheus is a CNCF project which provides metrics and instrumentation. It can be used to help inform autoscaling decisions, along with understanding the health and performance of OpenFaaS and our set of functions.
+
+3.	NATS is another CNCF project which, when combined with OpenFaaS, provides a way to queue up requests and defer them for later execution.
+
+**GitOps/laac Layer:**
+
+1.	OpenFaaS Cloud orchestrates all the lower layers to provide a multi-user dashboard with authentication, built-in CI/CD and integration to GitHub or GitLab.
+
+2.	GitHub can be used to build and deploy functions using its Travis integration, or its own GitHub actions and container registry.
+
+3.	GitLab comes with a full suite of GitOps-like tooling that can be used to create build and deployment pipelines directly into OpenFaaS.
+ 
+
+**Once we configured Kubernetes and explored both Helm and arkade, let’s go ahead and deploy OpenFaaS to our cluster. Use arkade to install OpenFaaS. If you do not have Helm3 installed**
+
+**Get the faas-cli**
+
+    $ curl -SLsf https://cli.openfaas.com | sudo sh
+    $ arkade install openfaas
+
+**After the installation has completed, we’ll receive the commands we need to run, to log in and access the OpenFaaS Gateway service in Kubernetes**
+
+**Forward the gateway to our machine**
+
+    $ kubectl rollout status -n openfaas deploy/gateway
+    $ kubectl port-forward -n openfaas svc/gateway 8080:8080 &
+
+**If basic auth is enabled, we can now log into your gateway**
+
+    $ PASSWORD=$(kubectl get secret -n openfaas basic-auth -o
+jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
+
+    echo -n $PASSWORD | faas-cli login --username admin --password-stdin
+    
+    faas-cli store deploy figlet
+    
+    faas-cli list
+
+
+**We can get this message again at any time with arkade info openfaas. Let’s break it down, line by line**
+
+The kubectl rollout status command checks that all the containers in the core OpenFaaS stack have started and are healthy.
+The kubectl port-forward command securely forwards a connection to the OpenFaaS Gateway service within your cluster to your laptop on port 8080. It will remain open for as long as the process is running, so if it appears to be inaccessible later, just run this command again.
+The faas-cli login command and preceding line populate the PASSWORD environment variable. You can use this to get the password to open the UI at any time.
+We then have faas-cli store deploy figlet and faas-cli list. The first command deploys an ASCII generator function from the Function Store and the second command lists the deployed functions, you should see figlet listed.
+
+
+**We will also find the PLONK stack components deployed, such as Prometheus and NATS. We can see them in the openfaas Kubernetes namespace:**
+
+**List several NameSpaces in the cluster**
+    
+    $ kubectl get all --all-namespaces
+ 
+**Check the OpenFaaS deployment**
+    
+    $ kubectl get deploy -n openfaas
+ 
+
+**To see what are the pods deployed in openfaas namespace**
+    
+    $ kubectl get pods -o wide -n openfaas
+ 
+
+**To see what are the services deployed in openfaas namespace**
+    
+    $ kubectl get svc -n openfaas
+ 
+
+**Once we deploy a Kubernetes cluster and OpenFaaS then we can create a Function and deploy it on cluster**
+
+**To see the faas version. We will get the output like below**
+
+    $ faas-cli version
+
+ 
+
+**Note:** Before we create a function, we need to know where it will be stored as a container image. This could be a local container registry, a registry hosted by your cloud provider, or a managed registry. We will be using Docker Hub in this lab.
+
+
+**Create a sample function named hello-openfaas in python language**
+
+**Before starting this lab, create a new folder for your sample function**
+
+    $ mkdir test && cd test
+
+**There are two ways to create a new function**
+
+•	scaffold a function using a built-in or community code template (default)
+
+•	take an existing binary and use it as your function (advanced)
+
+
+**Pull the template from Templates**
+    
+    $ faas-cli template pull
+
+**List out the languages by using below command**
+
+    $ faas-cli template
+
+**Note:** If we would prefer to use Python 2.7 instead of Python 3 then swap faas-cli new --lang python3 for faas-cli new --lang python**
+
+**We will create a hello world sample function in Python language**
+
+    $ faas-cli new  - It is used for create a new function
+
+    $ faas-cli new --lang python3 hello-openfaas --prefix="<docker-username>"
+
+**This will create three files and a directory**
+
+    ./hello-openfaas.yml
+    ./hello-openfaas
+    ./hello-openfaas/handler.py
+    ./hello-openfaas/requirements.txt
+
+**This hello-openfaas.yml file is used to configure the CLI for building, pushing, and deploying our function**
+
+**Note:** If we deploy a function on local Kubernetes cluster or on cloud, we need to override the default gateway URL of 127.0.0.1:8080 with an environmental 
+
+variable: OPENFAAS_PREFIX
+OPENFAAS_URL=127.0.0.1:8080
+Below is the hello-openfaas.yml file content:
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+
+functions:
+  hello-openfaas:
+    lang: python3
+    handler: ./hello-openfaas
+    image: hello-openfaas
+
+
+**Remember that the gateway URL can be overridden in the YAML file (by editing the gateway: value under provider:) or on the CLI (by using --gateway or setting the OPENFAAS_URL environment variable)**
+
+**Below is the handler.py file content**
+
+def handle(req):
+    """handle a request to the function
+    Args:
+        req (str): request body
+    """
+
+    return "Hello OpenFaaS"
+
+
+**Build, Push and Deploy using below commands**
+
+    $ faas-cli build -f Yaml filename - build an image into the local Docker library
+ 
+    $ faas-cli push - f Yaml filename - push that image to a remote container registry
+ 
+    $ faas-cli deploy - f Yaml filename - deploy our function into a Kubernetes cluster
+ 
+**We can Automate the process of Build, Push and Deploy using single below command**
+
+    $ faas-cli up -f  Yaml filename
+
+
+**Note:** Please make sure that you have logged in to docker registry with docker login command before running above command.
+
+**List, inspect, invoke, and troubleshoot your functions**
+
+•	faas-cli list
+ 
+•	faas-cli describe
+
+•	faas-cli invoke
+
+•	faas-cli logs
+
+
+**Authenticate to the CLI, and create secrets for your functions**
+
+•	faas-cli login
+
+•	faas-cli secret
+
+
+**Now Scaling it**
+
+    $ kubectl autoscale deploy/hello-openfaas -n openfaas-fn --min=2 --max=5
+
+**We can see the number of deployments details by using below command**
+
+    $ Kubectl get deploy -n openfaas
+
+**We can see the openfaas service details by using below command**
+
+    $ kubectl get svc -n openfaas
+
+**We can see the deployment pods details by using below command**
+
+    $ kubectl get pods -n openfaas 
+
+**We can see check that function is responding or not**
+
+    $ curl -v http://127.0.0.1:8080/function/hello-openfaas/ping
+ 
+
+**We can see the deployment external gateway details by using below command**
+
+    $ kubectl get svc -n openfass -o wide
+
+**Now clone a tester application written in Go and deploy it to our cluster**
+
+    $ git clone https://github.com/alexellis/echo-fn && cd echo-fn && faas-cli template store pull golang-http && faas-cli deploy --label com.openfaas.scale.max=10 --label com.openfaas.scale.min=1
+
+**Deploy a function from marketplace using OpenFaaS UI**
+
+Run below command for password and use this password for logging into OpenFaaS UI
+
+    $ echo "OpenFaaS admin password: $PASSWORD"
+    
+**To open the UI navigate to http://127.0.0.1:8080 in a browser. There is no need to worry that this is using HTTP (plaintext) instead of HTTPS because the previous port-forwarding command runs over an encrypted connection**
+ 
+
+**When prompted, the user is admin and the password is the value from above. The password can be changed at any time. A commercial solution using OpenID Connect is also available separately**
+
+**Click on Deploy New Function then enter the function name in the search. Once we found, select that function then click on Deploy as shown in the below image. It will pull from the marketplace**
+ 
+
+**Select the same function from available list then click on INVOKE**
+ 
+
+**Once we click on INVOKE, we can see the output of the function. And we can see the Response Status, Replicas, Image repo URL**
+ 
+
+**Enter deployed function name in the search then select the function then click INVOKE. Will see the output**
+ 
+
+We can see the output of existing hello-openfaas function deployed from CLI.
+ 
+
+**Monitoring with Prometheus & Grafana**
+   
+**Exploring the Metrics**
+
+Prometheus is a time-series database used by OpenFaaS to track the requests per second being sent to an individual function along with the success and failure of those requests and their latency. This can be referred to as RED metrics or - rate, error, and duration.
+
+Prometheus does not come with any kind of authentication, so we keep it hidden by default. Port-forward Prometheus to your local computer:
+
+    $ kubectl port-forward deployment/prometheus 9090:9090 -n openfaas &
+
+Now open its UI using http://127.0.0.1:9090
+ 
+
+**Monitoring the Functions with a Grafana Dashboard**
+
+OpenFaaS tracks metrics on our functions automatically using Prometheus. The metrics can be turned into a useful dashboard with free and Open-Source tools like Grafana.
+
+**Deploy Grafana in OpenFaaS namespace**
+
+    $ kubectl -n openfaas run --image=stefanprodan/faas-grafana:4.6.3 --port=3000 grafana
+
+**Expose Grafana with a NodePort**
+
+    $ kubectl -n openfaas expose pod grafana --type=NodePort --name=grafana
+
+**Find Grafana node port address**
+
+    $ GRAFANA_PORT=$(kubectl -n openfaas get svc grafana -o jsonpath="{.spec.ports[0].nodePort}")
+
+    $ GRAFANA_URL=http://IP_ADDRESS:$GRAFANA_PORT/dashboard/db/openfaas
+
+Where IP_ADDRESS is our corresponding IP for Kubernetes.
+
+Or 
+
+We may run this port-forwarding command to be able to access Grafana on http://127.0.0.1:3000:
+
+    $ kubectl port-forward pod/grafana 3000:3000 -n openfaas
+
+If you're using Kubernetes 1.17 or older, use deploy/grafana instead of pod/ in the command above.
+
+After the service has been created open Grafana in your browser, login with username admin password admin and navigate to the pre-made OpenFaaS dashboard at $GRAFANA_URL.
+
+We can observe in below screenshots, how the load/traffic is increasing  
+ 
+ 
+ 
+ 
+ 
+
+
+**Auto-Scaling Work**
+
+We can read more on how auto-scaling works in the OpenFaaS documentation.
+
+OpenFaaS can scale functions down to zero automatically when they are idle using its faas-idler component. You can read about how to enable it in the OpenFaaS documentation. However, it is turned off by default to avoid premature optimizations.
+
+For this example, we will manually scale down the function, and then invoke it again.
+
+Open four terminal windows and type in the following commands, one into each terminal, so that we can monitor what happens when you invoke the function that is scaled to zero.
+
+**Show the pods that are removed, and then created again**
+
+    $ kubectl get pods -n openfaas-fn -w
+
+**Show the container image being pulled and a pod being scheduled**
+
+    $ kubectl get events --sort-by=.metadata.creationTimestamp -n openfaas-fn -w
+
+**Show the gateway finding out how many replicas are present, and then blocking the request until the desired state is met**
+
+    $ kubectl logs -n openfaas deploy/gateway -c gateway -f
+
+**Scale the function down manually, then wait a few seconds**
+
+    $ kubectl scale deployment/go-echo -n openfaas-fn -replicas=0; sleep 10
+
+**Now we are ready to invoke the function again**
+
+    $ curl -d "hi" http://127.0.0.1:8080/function/go-echo
+ 
+**Scale from Zero**
+
+**Kubernetes is an event-driven system which relies on events being propagated throughout its cluster when actions take place. In this example, the following happened**
+
+•	The gateway saw no pods were present in openfaas-fn for the function.
+
+•	The gateway asked Kubernetes to scale up to 1.
+
+•	The gateway called GetReplicas in a loop.
+
+•	Kubernetes scheduled the pod for the function.
+
+•	The Kubernetes node started to pull the image from Docker Hub.
+
+•	Kubernetes went into a loop trying to call the function’s HTTP health endpoint, to see if it was ready to serve traffic.
+
+•	Kubernetes marked the endpoint as ready for traffic.
+
+•	The gateway stopped blocking the request and let it through to the function and we got the result.
+
+
+Kubernetes is also called “eventually consistent” and requires some tuning to get the cold-start we saw above under 1-2 seconds. You will find more about this in the 
+
+OpenFaaS documentation. Ultimately, you can avoid all cold-starts by having some minimum amount of available replicas i.e. 1-5. You can also run functions asynchronously, which will hide any scaling-up from the user.
+
+Another option we mentioned earlier in the course was faasd, which runs on a single host, and eliminates the eventually-consistent nature of a cluster and can cold-start in as little as 0.19s.
+ 
+
+
+ 
+ 
