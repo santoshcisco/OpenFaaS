@@ -8,6 +8,8 @@
 </p>
 
 
+
+
 **Deploy the OpenFaaS**
 
 •	OpenFaaS is a Serverless Framework.
@@ -17,6 +19,8 @@
 •	The Community Edition (CE) of OpenFaaS uses our legacy scaling technology, which is meant for development only
 
 •	OpenFaaS Pro Edition gives auto scaling feature. If you are looking for Production, then go for OpenFaaS Pro Edition
+
+
 
 **What is PLONK?**
 
@@ -51,10 +55,12 @@ The PLONK stack also requires components like a Container Registry and Container
 
 **Once we configured Kubernetes and explored both Helm and arkade, let’s go ahead and deploy OpenFaaS to our cluster. Use arkade to install OpenFaaS. If you do not have Helm3 installed**
 
+
 **Get the faas-cli**
 
     $ curl -SLsf https://cli.openfaas.com | sudo sh
     $ arkade install openfaas
+
 
 **After the installation has completed, we’ll receive the commands we need to run, to log in and access the OpenFaaS Gateway service in Kubernetes**
 
@@ -62,6 +68,7 @@ The PLONK stack also requires components like a Container Registry and Container
 
     $ kubectl rollout status -n openfaas deploy/gateway
     $ kubectl port-forward -n openfaas svc/gateway 8080:8080 &
+
 
 **If basic auth is enabled, we can now log into your gateway**
 
@@ -86,10 +93,12 @@ We then have faas-cli store deploy figlet and faas-cli list. The first command d
 
 **We will also find the PLONK stack components deployed, such as Prometheus and NATS. We can see them in the openfaas Kubernetes namespace:**
 
+
 **List several NameSpaces in the cluster**
     
     $ kubectl get all --all-namespaces
  
+
 **Check the OpenFaaS deployment**
     
     $ kubectl get deploy -n openfaas
@@ -107,6 +116,7 @@ We then have faas-cli store deploy figlet and faas-cli list. The first command d
 
 **Once we deploy a Kubernetes cluster and OpenFaaS then we can create a Function and deploy it on cluster**
 
+
 **To see the faas version. We will get the output like below**
 
     $ faas-cli version
@@ -118,9 +128,11 @@ We then have faas-cli store deploy figlet and faas-cli list. The first command d
 
 **Create a sample function named hello-openfaas in python language**
 
+
 **Before starting this lab, create a new folder for your sample function**
 
     $ mkdir test && cd test
+
 
 **There are two ways to create a new function**
 
@@ -133,17 +145,21 @@ We then have faas-cli store deploy figlet and faas-cli list. The first command d
     
     $ faas-cli template pull
 
+
 **List out the languages by using below command**
 
     $ faas-cli template
 
+
 **Note:** If we would prefer to use Python 2.7 instead of Python 3 then swap faas-cli new --lang python3 for faas-cli new --lang python**
+
 
 **We will create a hello world sample function in Python language**
 
     $ faas-cli new  - It is used for create a new function
 
     $ faas-cli new --lang python3 hello-openfaas --prefix="<docker-username>"
+
 
 **This will create three files and a directory as we see below**
 
@@ -158,12 +174,14 @@ Variable: OPENFAAS_PREFIX
 
 OPENFAAS_URL=127.0.0.1:8080
 
+
 **Below is the hello-openfaas.yml file content**
 
 ![image](https://user-images.githubusercontent.com/38450758/209444893-fe89b7cd-5a0d-4b3b-9ed1-e8f52f5270ae.png)
 
 
 **Remember that the gateway URL can be overridden in the YAML file (by editing the gateway: value under provider:) or on the CLI (by using --gateway or setting the OPENFAAS_URL environment variable)**
+
 
 **Below is the handler.py file content**
 
@@ -200,6 +218,7 @@ OPENFAAS_URL=127.0.0.1:8080
 
 **Note:** Please make sure that you have logged in to docker registry with docker login command before running above command.
 
+
 **List, inspect, invoke, and troubleshoot your functions**
 
 •	faas-cli list
@@ -225,17 +244,21 @@ OPENFAAS_URL=127.0.0.1:8080
 
     $ kubectl autoscale deploy/hello-openfaas -n openfaas-fn --min=2 --max=5
 
+
 **We can see the number of deployments details by using below command**
 
     $ Kubectl get deploy -n openfaas
+
 
 **We can see the openfaas service details by using below command**
 
     $ kubectl get svc -n openfaas
 
+
 **We can see the deployment pods details by using below command**
 
     $ kubectl get pods -n openfaas 
+
 
 **We can see check that function is responding or not**
 
@@ -249,9 +272,11 @@ OPENFAAS_URL=127.0.0.1:8080
 
     $ kubectl get svc -n openfass -o wide
 
+
 **Now clone a tester application written in Go and deploy it to our cluster**
 
     $ git clone https://github.com/alexellis/echo-fn && cd echo-fn && faas-cli template store pull golang-http && faas-cli deploy --label com.openfaas.scale.max=10 --label com.openfaas.scale.min=1
+
 
 **Deploy a function from marketplace using OpenFaaS UI**
 
@@ -259,12 +284,14 @@ Run below command for password and use this password for logging into OpenFaaS U
 
     $ echo "OpenFaaS admin password: $PASSWORD"
     
+
 **To open the UI navigate to http://127.0.0.1:8080 in a browser. There is no need to worry that this is using HTTP (plaintext) instead of HTTPS because the previous port-forwarding command runs over an encrypted connection**
  
 ![image](https://user-images.githubusercontent.com/38450758/209445308-38ede202-dcd1-4956-ad00-0cb7cee6f6ba.png)
 
 
 **When prompted, the user is admin and the password is the value from above. The password can be changed at any time. A commercial solution using OpenID Connect is also available separately**
+
 
 **Click on Deploy New Function then enter the function name in the search. Once we found, select that function then click on Deploy as shown in the below image. It will pull from the marketplace**
  
@@ -292,7 +319,10 @@ Run below command for password and use this password for logging into OpenFaaS U
 
  
 
+
+
 **Monitoring with Prometheus & Grafana**
+
 
 
 ![image](https://user-images.githubusercontent.com/38450758/209445481-984665fc-be00-4620-ac41-2371fce68364.png)
@@ -315,13 +345,16 @@ Now open its UI using http://127.0.0.1:9090
 
 OpenFaaS tracks metrics on our functions automatically using Prometheus. The metrics can be turned into a useful dashboard with free and Open-Source tools like Grafana.
 
+
 **Deploy Grafana in OpenFaaS namespace**
 
     $ kubectl -n openfaas run --image=stefanprodan/faas-grafana:4.6.3 --port=3000 grafana
 
+
 **Expose Grafana with a NodePort**
 
     $ kubectl -n openfaas expose pod grafana --type=NodePort --name=grafana
+
 
 **Find Grafana node port address**
 
@@ -331,7 +364,9 @@ OpenFaaS tracks metrics on our functions automatically using Prometheus. The met
 
 Where IP_ADDRESS is our corresponding IP for Kubernetes.
 
+
 Or 
+
 
 We may run this port-forwarding command to be able to access Grafana on http://127.0.0.1:3000:
 
@@ -341,8 +376,12 @@ If you're using Kubernetes 1.17 or older, use deploy/grafana instead of pod/ in 
 
 After the service has been created open Grafana in your browser, login with username admin password admin and navigate to the pre-made OpenFaaS dashboard at $GRAFANA_URL.
 
+
+
 **We can observe in below screenshots, how the load/traffic is increasing**  
  
+
+
 ![image](https://user-images.githubusercontent.com/38450758/209445657-d190b187-229c-4772-baa3-495310ce6278.png)
 
 ![image](https://user-images.githubusercontent.com/38450758/209445715-28ed1532-b680-4ddc-b878-9bb7748f3f79.png)
@@ -365,21 +404,26 @@ For this example, we will manually scale down the function, and then invoke it a
 
 Open four terminal windows and type in the following commands, one into each terminal, so that we can monitor what happens when you invoke the function that is scaled to zero.
 
+
 **Show the pods that are removed, and then created again**
 
     $ kubectl get pods -n openfaas-fn -w
+
 
 **Show the container image being pulled and a pod being scheduled**
 
     $ kubectl get events --sort-by=.metadata.creationTimestamp -n openfaas-fn -w
 
+
 **Show the gateway finding out how many replicas are present, and then blocking the request until the desired state is met**
 
     $ kubectl logs -n openfaas deploy/gateway -c gateway -f
 
+
 **Scale the function down manually, then wait a few seconds**
 
     $ kubectl scale deployment/go-echo -n openfaas-fn -replicas=0; sleep 10
+
 
 **Now we are ready to invoke the function again**
 
@@ -389,6 +433,7 @@ Open four terminal windows and type in the following commands, one into each ter
 
  
 **Scale from Zero**
+
 
 **Kubernetes is an event-driven system which relies on events being propagated throughout its cluster when actions take place. In this example, the following happened**
 
@@ -415,6 +460,11 @@ OpenFaaS documentation. Ultimately, you can avoid all cold-starts by having some
 
 Another option we mentioned earlier in the course was faasd, which runs on a single host, and eliminates the eventually-consistent nature of a cluster and can cold-start in as little as 0.19s.
  
+
+
+
+
+
 
 
 ![image](https://user-images.githubusercontent.com/38450758/209445873-33f9482a-8a22-428b-b6c5-9a284447d188.png)
