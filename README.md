@@ -12,7 +12,7 @@
 
 **If you want to deploy OpenFaaS in a kubernetes cluster then follow below link** 
 <br>
-**Create kubernetes cluster with K3D** [ Click here](https://github.com/santoshcisco/k3d)
+**Create kubernetes cluster with K3D** [ Click here](https://github.com/santoshcisco/k3d/blob/main/README.md)
 
 <br>
 
