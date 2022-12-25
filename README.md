@@ -10,6 +10,12 @@
 <br>
 <br>
 
+**If you want to deploy OpenFaaS in a kubernetes cluster then follow below link** 
+<br>
+**Create kubernetes cluster with K3D** [ Click here](https://github.com/santoshcisco/k3d)
+
+<br>
+
 **<p>Deploy the OpenFaaS</p>**
 
 •	OpenFaaS is a Serverless Framework.
@@ -468,14 +474,10 @@ Kubernetes is also called “eventually consistent” and requires some tuning t
 OpenFaaS documentation. Ultimately, you can avoid all cold-starts by having some minimum amount of available replicas i.e. 1-5. You can also run functions asynchronously, which will hide any scaling-up from the user.
 
 Another option we mentioned earlier in the course was faasd, which runs on a single host, and eliminates the eventually-consistent nature of a cluster and can cold-start in as little as 0.19s.
- 
 <br>
 <br>
 <br>
 <br>
-<br>
-<br>
-
 ![image](https://user-images.githubusercontent.com/38450758/209445873-33f9482a-8a22-428b-b6c5-9a284447d188.png)
 
 
