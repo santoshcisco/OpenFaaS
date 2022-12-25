@@ -7,10 +7,10 @@
   <img src="https://user-images.githubusercontent.com/38450758/209446422-ab7db3a2-66b4-4af6-8031-394848dc8169.png">
 </p>
 
+<br>
+<br>
 
-
-
-**Deploy the OpenFaaS**
+**<p>Deploy the OpenFaaS</p>**
 
 •	OpenFaaS is a Serverless Framework.
 
@@ -239,6 +239,7 @@ OPENFAAS_URL=127.0.0.1:8080
 
 •	faas-cli secret
 
+<br>
 
 **Now Scaling it**
 
@@ -298,14 +299,17 @@ Run below command for password and use this password for logging into OpenFaaS U
 ![image](https://user-images.githubusercontent.com/38450758/209445343-68cec21f-acce-46c2-b156-de7feb450638.png)
 
 
+
 **Select the same function from available list then click on INVOKE**
  
 ![image](https://user-images.githubusercontent.com/38450758/209445358-7b6b38e9-5166-4605-a6c8-803fd26786d8.png)
 
 
+
 **Once we click on INVOKE, we can see the output of the function. And we can see the Response Status, Replicas, Image repo URL**
  
 ![image](https://user-images.githubusercontent.com/38450758/209445404-cc28e4f7-db71-467d-aa32-d62895382edb.png)
+
 
 
 **Enter deployed function name in the search then select the function then click INVOKE. Will see the output**
@@ -318,15 +322,16 @@ Run below command for password and use this password for logging into OpenFaaS U
 ![image](https://user-images.githubusercontent.com/38450758/209445451-352027b8-6c61-41d8-adcd-cc9b6491e8f0.png)
 
  
-
+<br>
 
 
 **Monitoring with Prometheus & Grafana**
 
-
+<br>
 
 ![image](https://user-images.githubusercontent.com/38450758/209445481-984665fc-be00-4620-ac41-2371fce68364.png)
 
+<br>
    
 **Exploring the Metrics**
 
@@ -340,11 +345,13 @@ Now open its UI using http://127.0.0.1:9090
  
 ![image](https://user-images.githubusercontent.com/38450758/209445505-c29752ea-d4fb-476e-8937-fde98c89ce34.png)
 
+<br>
 
 **Monitoring the Functions with a Grafana Dashboard**
 
 OpenFaaS tracks metrics on our functions automatically using Prometheus. The metrics can be turned into a useful dashboard with free and Open-Source tools like Grafana.
 
+<br>
 
 **Deploy Grafana in OpenFaaS namespace**
 
@@ -376,11 +383,11 @@ If you're using Kubernetes 1.17 or older, use deploy/grafana instead of pod/ in 
 
 After the service has been created open Grafana in your browser, login with username admin password admin and navigate to the pre-made OpenFaaS dashboard at $GRAFANA_URL.
 
-
+<br>
 
 **We can observe in below screenshots, how the load/traffic is increasing**  
  
-
+<br>
 
 ![image](https://user-images.githubusercontent.com/38450758/209445657-d190b187-229c-4772-baa3-495310ce6278.png)
 
@@ -392,7 +399,7 @@ After the service has been created open Grafana in your browser, login with user
 
 ![image](https://user-images.githubusercontent.com/38450758/209445826-e4e217da-f652-4c92-ab17-b5ec29e42650.png)
 
-
+<br>
 
 **Auto-Scaling Work**
 
@@ -404,6 +411,7 @@ For this example, we will manually scale down the function, and then invoke it a
 
 Open four terminal windows and type in the following commands, one into each terminal, so that we can monitor what happens when you invoke the function that is scaled to zero.
 
+<br>
 
 **Show the pods that are removed, and then created again**
 
@@ -431,6 +439,7 @@ Open four terminal windows and type in the following commands, one into each ter
     
 ![image](https://user-images.githubusercontent.com/38450758/209445847-07773445-9bb4-44f5-8450-40da53c39d67.png)
 
+<br>
  
 **Scale from Zero**
 
@@ -460,12 +469,12 @@ OpenFaaS documentation. Ultimately, you can avoid all cold-starts by having some
 
 Another option we mentioned earlier in the course was faasd, which runs on a single host, and eliminates the eventually-consistent nature of a cluster and can cold-start in as little as 0.19s.
  
-
-
-
-
-
-
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
 ![image](https://user-images.githubusercontent.com/38450758/209445873-33f9482a-8a22-428b-b6c5-9a284447d188.png)
 
