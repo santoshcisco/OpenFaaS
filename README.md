@@ -405,6 +405,9 @@ After the service has been created open Grafana in your browser, login with user
 
 ![image](https://user-images.githubusercontent.com/38450758/209445826-e4e217da-f652-4c92-ab17-b5ec29e42650.png)
 
+![image](https://user-images.githubusercontent.com/38450758/210098998-3e00589d-4cfd-476f-b4ea-2d65220c543f.png)
+
+
 <br>
 
 **Auto-Scaling Work**
